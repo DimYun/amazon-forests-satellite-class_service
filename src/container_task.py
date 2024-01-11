@@ -13,6 +13,7 @@ class Storage:
     def __init__(self, config: dict):
         self._config = config
         os.makedirs(config['dir_path'], exist_ok=True)
+        os.makedirs(config['dir_upload'], exist_ok=True)
 
     def save(self, content_str: str, content_id: str):
         if not os.path.exists(self._get_path(content_id)):
@@ -52,7 +53,6 @@ class ProcessPlanet:
             'selective_logging',
             'blow_down',
         ]
-        os.makedirs('../uploaded_imgs', exist_ok=True)
 
     def process(self, image: bytes, content_id: str):
         scores_str = self._storage.get(content_id)

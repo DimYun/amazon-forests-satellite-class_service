@@ -13,6 +13,8 @@ RUN apt-get update && \
 
 WORKDIR /planet_service
 
+RUN pip install torch==2.0.1 --index-url https://download.pytorch.org/whl/cpu
+
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .

@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from http import HTTPStatus
 
+
 def test_types_list(client: TestClient):
     response = client.get('/planet/get_content?content_id=test')
     assert response.status_code == HTTPStatus.OK

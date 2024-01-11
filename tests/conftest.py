@@ -1,8 +1,8 @@
-import os.path # noqa: WPS301
+import os.path  # noqa: WPS301
 
 import cv2
 import pytest
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from omegaconf import OmegaConf
 

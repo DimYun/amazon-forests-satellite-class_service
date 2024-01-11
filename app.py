@@ -35,7 +35,7 @@ def process_content(
     finally:
         content_image.file.close()
 
-    image = cv2.imread('test.jpg')[..., ::-1]
+    image = cv2.imread(os.path.join('uploaded_imgs', content_image.filename))[..., ::-1]
     Image.fromarray(image)
     str_process = content_process.process(
         image,
@@ -48,7 +48,12 @@ def process_content(
 
 
 def create_app():
-    config = {'content_process': {'dir_path': 'api_test_dir'}}
+    config = {
+        'content_process': {
+            'dir_path': 'api_test_dir',
+            'dir_upload': 'uploaded_imgs',
+        },
+    }
     container = Container()
     container.config.from_dict(config)
     container.wire([__name__])
@@ -56,6 +61,7 @@ def create_app():
     app.container = container
     app.include_router(router)
     return app
+
 
 def set_routers(app: FastAPI):
     app.include_router(router, prefix='/planet', tags=['planet'])

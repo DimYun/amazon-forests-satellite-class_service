@@ -4,7 +4,7 @@ DOCKER_IMAGE := planet
 
 .PHONY: run_app
 run_app:
-	python3 -m uvicorn app:create_app --host='127.0.0.1' --port=$(APP_PORT)
+	python3 -m uvicorn app:create_app --host='0.0.0.0' --port=$(APP_PORT)
 
 .PHONY: install
 install:
@@ -29,8 +29,12 @@ generate_coverage_report:
 
 .PHONY: lint
 lint:
-	flake8 .
+	flake8 src app.py
 
 .PHONY: build
 build:
 	docker build -f Dockerfile . -t $(DOCKER_IMAGE):$(DOCKER_TAG)
+
+.PHONY: docker_run
+docker_run:
+	docker run -p 5039:5039 -d $(DOCKER_IMAGE):$(DOCKER_TAG)
