@@ -6,25 +6,21 @@ import cv2
 import torch
 from PIL import Image
 
-import requests
 from dependency_injector import containers, providers
-# from dependency_injector.wiring import Provide, inject
+
 
 class Storage:
     def __init__(self, config: dict):
         self._config = config
         os.makedirs(config['dir_path'], exist_ok=True)
 
-    def save(self, content: str, content_id: str):
-        if os.path.exists(self._get_path(content_id)):
-            pass
-        else:
+    def save(self, content_str: str, content_id: str):
+        if not os.path.exists(self._get_path(content_id)):
             with open(self._get_path(content_id), 'w') as f:
-                f.write(content)
+                f.write(content_str)
 
     def get(self, content_id: str) -> tp.Optional[str]:
         content_path = self._get_path(content_id)
-        print(content_path)
         if not os.path.exists(content_path):
             return 'Start process image first'
         with open(content_path, 'r') as f:
@@ -54,43 +50,38 @@ class ProcessPlanet:
             'artisinal_mine',
             'blooming',
             'selective_logging',
-            'blow_down'
+            'blow_down',
         ]
-        os.makedirs('uploaded_imgs', exist_ok=True)
+        os.makedirs('../uploaded_imgs', exist_ok=True)
 
     def process(self, image: bytes, content_id: str):
         scores_str = self._storage.get(content_id)
         if scores_str == 'Start process image first':
-            providers = [
-                # 'CUDAExecutionProvider',
-                'CPUExecutionProvider',
-            ]
-
             ort_session = ort.InferenceSession(
-                'onnx_planet_model.onnx',
-                providers=providers
+                'src/onnx_planet_model.onnx',
+                providers=['CPUExecutionProvider'],
             )
 
             # готовим входной тензор
             onnx_input = self.onnx_preprocessing(image)
-            onnx_input = np.concatenate([onnx_input] * 1)
+            onnx_input = np.concatenate([onnx_input])
 
             ort_inputs = {ort_session.get_inputs()[0].name: onnx_input}
             # выполняем инференс ONNX Runtime
-            ort_outputs = ort_session.run(None, ort_inputs)[0]
-            scores_onnx = torch.sigmoid(torch.tensor(ort_outputs))[0].cpu().numpy()
+            ort_outputs = torch.tensor(ort_session.run(None, ort_inputs)[0])
+            scores_onnx = torch.sigmoid(ort_outputs)[0].cpu().numpy()
 
-            scores_str = ',\n'.join(
-                [f"{n}: {s}" for s, n in zip(scores_onnx, self.names)]
+            scores_str = ', '.join(
+                [f'{n}: {s}' for s, n in zip(scores_onnx, self.names)],
             )
 
             self._storage.save(scores_str, content_id)
         return scores_str
 
     def onnx_preprocessing(
-            self,
-            image: np.ndarray,
-            image_size: tp.Tuple[int, int] = (224, 224),
+        self,
+        image: np.ndarray,
+        image_size: tp.Tuple[int, int] = (224, 224),
     ) -> np.ndarray:
         """
         Convert numpy-image to array for inference ONNX Runtime model.
@@ -117,21 +108,17 @@ class Container(containers.DeclarativeContainer):
 
     store = providers.Factory(
         Storage,
-        config=config.content_process
+        config=config.content_process,
     )
 
     content_process = providers.Singleton(
         ProcessPlanet,
-        storage=store.provider()
+        storage=store.provider(),
     )
+
 
 # @inject
 def task1():
-    """
-    1. Инициализация контейнера
-    2. Получение объекта content_process класса ProcessPlanet из контейнера
-    3. Обработать картинку при помощи content_process
-    """
     config = {
         'content_process': {
             'dir_path': 'test_dir',
@@ -139,9 +126,7 @@ def task1():
     }
 
     container = Container()
-    # container.wire(modules=[__name__])
     container.config.from_dict(config)
-    # print(container.config())
 
     content_process = container.content_process()
 
@@ -150,18 +135,11 @@ def task1():
 
     content_process.process(
         image,
-        'test.jpg'
+        'test.jpg',
     )
 
 
 def task2():
-    """
-    1. Инициализация контейнера
-    2. Перегрузить конфиг контейнера так, чтобы в перегруженном конфиге поменялся 'dir_path'
-      (with container.config.override(...))
-    3. Из перегруженного контейнейнера получить объект downloader и сохранить им картинку
-    """
-
     config = {
         'content_process': {
             'dir_path': 'test_dir',
@@ -175,7 +153,7 @@ def task2():
             'dir_path': 'mock_test_dir',
         },
     }
-    with container.config.override(config_mock): #(нужно подменить test_dir на какое-то другое значение)
+    with container.config.override(config_mock):
         content_process = container.content_process()
         image = cv2.imread('test.jpg')[..., ::-1]
         Image.fromarray(image)
@@ -187,14 +165,5 @@ def task2():
 
 
 if __name__ == '__main__':
-    # config = {
-    #     'downloader': {
-    #         'dir_path': 'test_dir',
-    #     },
-    # }
-    # storage = Storage(config['downloader'])
-    # downloader = Downloader(storage)
-    # downloader.download('https://hips.hearstapps.com/hmg-prod/images/cute-cat-photos-1593441022.jpg', 'image.jpg')
-
     task1()
-    # task2()
+    task2()
