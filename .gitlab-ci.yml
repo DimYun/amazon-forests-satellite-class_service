@@ -1,0 +1,31 @@
+stages:
+  - code-style-tests
+  - unit-tests
+  - integration-tests
+
+image: python:3.10
+
+test-code-job1:
+  stage: code-style-tests
+  script:
+    - echo 'Test code style with linters'
+    - pip install torch==2.0.1 --index-url https://download.pytorch.org/whl/cpu
+    - pip install --no-cache-dir -r requirements.txt
+    - flake8 src app.py
+
+test-code-job2:
+  stage: unit-tests
+  script:
+    - echo 'Unit tests'
+    - pip install torch==2.0.1 --index-url https://download.pytorch.org/whl/cpu
+    - pip install --no-cache-dir -r requirements.txt
+    - PYTHONPATH=. pytest tests/unit/
+
+
+test-code-job3:
+  stage: integration-tests
+  script:
+    - echo 'Integration tests'
+    - pip install torch==2.0.1 --index-url https://download.pytorch.org/whl/cpu
+    - pip install --no-cache-dir -r requirements.txt
+    - PYTHONPATH=. pytest tests/integration/
