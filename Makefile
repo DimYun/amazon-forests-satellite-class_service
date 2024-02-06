@@ -29,7 +29,9 @@ generate_coverage_report:
 
 .PHONY: lint
 lint:
-	flake8 src app.py
+	PYTHONPATH=. flake8 src app.py
+	PYTHONPATH=. black src app.py
+	PYTHONPATH=. isort src app.py
 
 .PHONY: build
 build:

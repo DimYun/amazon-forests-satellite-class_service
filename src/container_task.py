@@ -1,65 +1,65 @@
 import os
 import typing as tp
-import onnxruntime as ort
-import numpy as np
-import cv2
-import torch
-from PIL import Image
 
+import cv2
+import numpy as np
+import onnxruntime as ort
+import torch
 from dependency_injector import containers, providers
+from PIL import Image
 
 
 class Storage:
     def __init__(self, config: dict):
         self._config = config
-        os.makedirs(config['dir_path'], exist_ok=True)
-        os.makedirs(config['dir_upload'], exist_ok=True)
+        os.makedirs(config["dir_path"], exist_ok=True)
+        os.makedirs(config["dir_upload"], exist_ok=True)
 
     def save(self, content_str: str, content_id: str):
         if not os.path.exists(self._get_path(content_id)):
-            with open(self._get_path(content_id), 'w') as f:
+            with open(self._get_path(content_id), "w") as f:
                 f.write(content_str)
 
     def get(self, content_id: str) -> tp.Optional[str]:
         content_path = self._get_path(content_id)
         if not os.path.exists(content_path):
-            return 'Start process image first'
-        with open(content_path, 'r') as f:
+            return "Start process image first"
+        with open(content_path, "r") as f:
             return f.read()
 
     def _get_path(self, content_id: str):
-        return os.path.join(self._config['dir_path'], content_id)
+        return os.path.join(self._config["dir_path"], content_id)
 
 
 class ProcessPlanet:
     def __init__(self, storage: Storage):
         self._storage = storage
         self.names = [
-            'haze',
-            'primary',
-            'agriculture',
-            'clear',
-            'water',
-            'habitation',
-            'road',
-            'cultivation',
-            'slash_burn',
-            'cloudy',
-            'partly_cloudy',
-            'conventional_mine',
-            'bare_ground',
-            'artisinal_mine',
-            'blooming',
-            'selective_logging',
-            'blow_down',
+            "haze",
+            "primary",
+            "agriculture",
+            "clear",
+            "water",
+            "habitation",
+            "road",
+            "cultivation",
+            "slash_burn",
+            "cloudy",
+            "partly_cloudy",
+            "conventional_mine",
+            "bare_ground",
+            "artisinal_mine",
+            "blooming",
+            "selective_logging",
+            "blow_down",
         ]
 
     def process(self, image: bytes, content_id: str):
         scores_str = self._storage.get(content_id)
-        if scores_str == 'Start process image first':
+        if scores_str == "Start process image first":
             ort_session = ort.InferenceSession(
-                'src/onnx_planet_model.onnx',
-                providers=['CPUExecutionProvider'],
+                "src/onnx_planet_model.onnx",
+                providers=["CPUExecutionProvider"],
             )
 
             # готовим входной тензор
@@ -71,8 +71,8 @@ class ProcessPlanet:
             ort_outputs = torch.tensor(ort_session.run(None, ort_inputs)[0])
             scores_onnx = torch.sigmoid(ort_outputs)[0].cpu().numpy()
 
-            scores_str = ', '.join(
-                [f'{n}: {s}' for s, n in zip(scores_onnx, self.names)],
+            scores_str = ", ".join(
+                [f"{n}: {s}" for s, n in zip(scores_onnx, self.names)],
             )
 
             self._storage.save(scores_str, content_id)
@@ -120,8 +120,8 @@ class Container(containers.DeclarativeContainer):
 # @inject
 def task1():
     config = {
-        'content_process': {
-            'dir_path': 'test_dir',
+        "content_process": {
+            "dir_path": "test_dir",
         },
     }
 
@@ -130,40 +130,40 @@ def task1():
 
     content_process = container.content_process()
 
-    image = cv2.imread('test.jpg')[..., ::-1]
+    image = cv2.imread("test.jpg")[..., ::-1]
     Image.fromarray(image)
 
     content_process.process(
         image,
-        'test.jpg',
+        "test.jpg",
     )
 
 
 def task2():
     config = {
-        'content_process': {
-            'dir_path': 'test_dir',
+        "content_process": {
+            "dir_path": "test_dir",
         },
     }
 
     container = Container()
     container.config.from_dict(config)
     config_mock = {
-        'content_process': {
-            'dir_path': 'mock_test_dir',
+        "content_process": {
+            "dir_path": "mock_test_dir",
         },
     }
     with container.config.override(config_mock):
         content_process = container.content_process()
-        image = cv2.imread('test.jpg')[..., ::-1]
+        image = cv2.imread("test.jpg")[..., ::-1]
         Image.fromarray(image)
 
         content_process.process(
             image,
-            'test_img',
+            "test_img",
         )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     task1()
     task2()
