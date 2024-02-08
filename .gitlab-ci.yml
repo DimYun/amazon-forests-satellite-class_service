@@ -26,6 +26,7 @@ pull_model:
   stage: prepare
   script:
     - make install_dvc
+    - make init_dvc
     - make download_model
   artifacts:
     paths:
