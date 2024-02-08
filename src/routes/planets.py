@@ -1,11 +1,11 @@
-import numpy as np
 import cv2
+import numpy as np
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, File, UploadFile
 from PIL import Image
 
-from src.routes.routers import router
 from src.containers.containers import Container
+from src.routes.routers import router
 from src.services.planet_classifier import ProcessPlanet, Storage
 
 

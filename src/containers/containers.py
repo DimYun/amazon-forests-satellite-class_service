@@ -1,5 +1,6 @@
 from dependency_injector import containers, providers
-from src.services.planet_classifier import Storage, ProcessPlanet
+
+from src.services.planet_classifier import ProcessPlanet, Storage
 
 
 class Container(containers.DeclarativeContainer):

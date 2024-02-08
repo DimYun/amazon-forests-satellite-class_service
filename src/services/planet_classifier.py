@@ -30,7 +30,8 @@ class Storage:
 
 
 class ProcessPlanet:
-    STATUS_READY = "Start process image first"
+    status_ready = "Start process image first"
+
     def __init__(self, storage: Storage):
         self._storage = storage
         self.names = [
@@ -55,15 +56,17 @@ class ProcessPlanet:
 
     def process(self, image: bytes, content_id: str):
         scores_str = self._storage.get(content_id)
-        if scores_str == self.STATUS_READY:
+        if scores_str == self.status_ready:
             # готовим входной тензор
             onnx_input = self.onnx_preprocessing(image)
             onnx_input = np.concatenate([onnx_input])
             scores_onnx = torch.sigmoid(self.use_onnx(onnx_input))[0]
             scores_onnx = scores_onnx.cpu().numpy()
             scores_str = [
-                f"{names}: {model_scores}" for model_scores, names in zip(
-                    scores_onnx, self.names
+                f"{names}: {model_scores}"
+                for model_scores, names in zip(
+                    scores_onnx,
+                    self.names,
                 )
             ]
             scores_str = ", ".join(scores_str)

@@ -5,7 +5,10 @@ import numpy as np
 import torch
 
 
-def preprocess_image(image: np.ndarray, target_image_size: tp.Tuple[int, int]) -> torch.Tensor:
+def preprocess_image(
+    image: np.ndarray,
+    target_image_size: tp.Tuple[int, int],
+) -> torch.Tensor:
     """Препроцессинг имаджнетом.
 
     :param image: RGB изображение;

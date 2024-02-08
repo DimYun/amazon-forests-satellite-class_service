@@ -6,16 +6,16 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from omegaconf import OmegaConf
 
-from src.container_task import Container
 import app as app_routs
 from app import set_routers
+from src.container_task import Container
 
-TESTS_DIR = 'tests'
+TESTS_DIR = "tests"
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def sample_image_bytes():
-    f = open(os.path.join(TESTS_DIR, 'images', 'file_0.jpg'), 'rb')  # noqa: WPS515
+    f = open(os.path.join(TESTS_DIR, "images", "file_0.jpg"), "rb")  # noqa: WPS515
     try:
         yield f.read()
     finally:
@@ -24,13 +24,13 @@ def sample_image_bytes():
 
 @pytest.fixture
 def sample_image_np():
-    img = cv2.imread(os.path.join(TESTS_DIR, 'images', 'file_0.jpg'))
+    img = cv2.imread(os.path.join(TESTS_DIR, "images", "file_0.jpg"))
     return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def app_config():
-    return OmegaConf.load(os.path.join(TESTS_DIR, 'test_config.yml'))
+    return OmegaConf.load(os.path.join(TESTS_DIR, "test_config.yml"))
 
 
 @pytest.fixture
