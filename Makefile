@@ -10,6 +10,10 @@ run_app:
 install:
 	pip install -r requirements.txt
 
+.PHONY: get model implementation
+get_onnx:
+	PYTHONPATH=. rsync -aP user@test_server:/home/user/onnx_planet_model.onnx src/services/onnx_planet_model.onnx
+
 .PHONY: run_unit_tests
 run_unit_tests:
 	PYTHONPATH=. pytest tests/unit/
@@ -29,9 +33,9 @@ generate_coverage_report:
 
 .PHONY: lint
 lint:
-	PYTHONPATH=. flake8 src app.py
-	PYTHONPATH=. black src app.py
-	PYTHONPATH=. isort src app.py
+	PYTHONPATH=. flake8 .
+	PYTHONPATH=. black .
+	PYTHONPATH=. isort .
 
 .PHONY: build
 build:

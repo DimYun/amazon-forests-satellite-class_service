@@ -1,73 +1,33 @@
-import os
+import argparse
 
-import cv2
 import uvicorn
-from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, FastAPI, File, UploadFile
-from PIL import Image
+from omegaconf import OmegaConf
 
-from src.container_task import Container, ProcessPlanet, Storage
+from src.containers.containers import Container
+from src.routes.routers import router as app_router
+from src.routes import planets as planets_routes
 
-router = APIRouter()
-
-
-@router.get("/get_content")
-@inject
-def get_content(
-    content_id: str,
-    storage: Storage = Depends(Provide[Container.store]),
-):
-    return {
-        "content": storage.get(content_id),
-    }
+from fastapi import FastAPI
 
 
-@router.post("/process_content")
-@inject
-def process_content(
-    content_image: UploadFile = File(...),
-    content_process: ProcessPlanet = Depends(Provide[Container.content_process]),
-):
-    try:
-        with open(os.path.join("uploaded_imgs", content_image.filename), "wb") as f:
-            f.write(content_image.file.read())
-    except Exception:
-        return {"message": "There was an error uploading the file"}
-    finally:
-        content_image.file.close()
-
-    image = cv2.imread(os.path.join("uploaded_imgs", content_image.filename))[..., ::-1]
-    Image.fromarray(image)
-    str_process = content_process.process(
-        image,
-        str(content_image.filename).split(".")[0],
-    )
-    return {
-        "message": f"Successfully uploaded {content_image.filename}",
-        "scores": str_process,
-    }
-
-
-def create_app():
-    config = {
-        "content_process": {
-            "dir_path": "api_test_dir",
-            "dir_upload": "uploaded_imgs",
-        },
-    }
+def create_app() -> FastAPI:
     container = Container()
-    container.config.from_dict(config)
-    container.wire([__name__])
+    cfg = OmegaConf.load('configs/config.yaml')
+    container.config.from_dict(cfg)
+    container.wire([planets_routes])
+
     app = FastAPI()
-    app.container = container
-    app.include_router(router)
+    app.include_router(app_router, prefix='/planets', tags=['planet'])
     return app
 
 
-def set_routers(app: FastAPI):
-    app.include_router(router, prefix="/planet", tags=["planet"])
-
-
 if __name__ == "__main__":
+
+    def arg_parse():
+        parser = argparse.ArgumentParser()
+        parser.add_argument("port", type=int, help="port number")
+        return parser.parse_args()
+
     app = create_app()
-    uvicorn.run(app, port=5039, host="127.0.0.1")
+    args = arg_parse()
+    uvicorn.run(app, port=args.port, host="127.0.0.1")

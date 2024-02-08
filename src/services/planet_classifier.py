@@ -5,8 +5,6 @@ import cv2
 import numpy as np
 import onnxruntime as ort
 import torch
-from dependency_injector import containers, providers
-from PIL import Image
 
 
 class Storage:
@@ -103,17 +101,3 @@ class ProcessPlanet:
 
         # transpose
         return image.transpose((2, 0, 1))[None]
-
-
-class Container(containers.DeclarativeContainer):
-    config = providers.Configuration()
-
-    store = providers.Factory(
-        Storage,
-        config=config.content_process,
-    )
-
-    content_process = providers.Singleton(
-        ProcessPlanet,
-        storage=store.provider(),
-    )

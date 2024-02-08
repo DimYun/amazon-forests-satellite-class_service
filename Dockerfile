@@ -9,11 +9,10 @@ RUN apt-get update && \
     wget \
     ffmpeg \
     libsm6 \
-    libxext6
+    libxext6 \
+    libgl1
 
 WORKDIR /planet_service
-
-RUN pip install torch==2.0.1 --index-url https://download.pytorch.org/whl/cpu
 
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
