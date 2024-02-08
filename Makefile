@@ -1,6 +1,8 @@
 APP_PORT := 5039
 DOCKER_TAG := latest
 DOCKER_IMAGE := planet
+DVC_REMOTE_NAME := models_onnx
+USERNAME := d.iunovidov
 
 .PHONY: run_app
 run_app:
@@ -12,9 +14,7 @@ install:
 
 .PHONY: download_model
 download_model:
-	dvc pull -R models
-	wget -O weights/genre_classifier.pt https://www.dropbox.com/s/xlax7mfwmzh4rjl/genre_classifier.pt?dl=0
-	rsync -aP user@test_server:/home/user/onnx_planet_model.onnx models/onnx_planet_model.onnx
+	dvc pull
 
 .PHONY: run_unit_tests
 run_unit_tests:
@@ -67,7 +67,7 @@ install_dvc:
 .PHONY: init_dvc
 init_dvc:
 	dvc init --no-scm
-	dvc remote add --default $(DVC_REMOTE_NAME) ssh://91.206.15.25/home/$(USERNAME)/dvc_files
+	dvc remote add --default $(DVC_REMOTE_NAME) ssh://91.206.15.25/home/$(USERNAME)/dvc_models
 	dvc remote modify $(DVC_REMOTE_NAME) user $(USERNAME)
 	dvc config cache.type hardlink,symlink
 

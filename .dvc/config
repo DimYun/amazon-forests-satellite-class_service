@@ -1,5 +1,8 @@
 [core]
+    no_scm = True
     remote = models_onnx
+[cache]
+    type = "hardlink,symlink"
 ['remote "models_onnx"']
-    url = ssh://d.iunovidov@91.206.15.25:22/home/d.iunovidov/dvc_models
+    url = ssh://91.206.15.25:22/home/d.iunovidov/dvc_models
     user = d.iunovidov
