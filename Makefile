@@ -14,6 +14,7 @@ install:
 
 .PHONY: download_model
 download_model:
+	dvc remote modify --local models_onnx keyfile ~/.ssh/id_rsa
 	dvc pull
 
 .PHONY: run_unit_tests
@@ -70,7 +71,6 @@ init_dvc:
 	dvc remote add --default $(DVC_REMOTE_NAME) ssh://91.206.15.25/home/$(USERNAME)/dvc_models
 	dvc remote modify $(DVC_REMOTE_NAME) user $(USERNAME)
 	dvc config cache.type hardlink,symlink
-	dvc remote modify --local models_onnx keyfile ~/.ssh/id_rsa
 
 .PHONY: install_c_libs
 install_c_libs:
