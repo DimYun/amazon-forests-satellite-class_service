@@ -9,14 +9,15 @@ RUN apt-get update && \
     wget \
     ffmpeg \
     libsm6 \
-    libxext6 \
-    libgl1
+    libxext6
 
 WORKDIR /planet_service
 
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
+
+RUN make download_model
 
 EXPOSE 5039
 

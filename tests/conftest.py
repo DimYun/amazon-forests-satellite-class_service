@@ -6,20 +6,17 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from omegaconf import OmegaConf
 
-import app as app_routs
-from app import set_routers
-from src.container_task import Container
+from src.containers.containers import Container
+from src.routes import planets as planets_routes
+from src.routes.routers import router as app_router
 
 TESTS_DIR = "tests"
 
 
 @pytest.fixture(scope="session")
 def sample_image_bytes():
-    f = open(os.path.join(TESTS_DIR, "images", "file_0.jpg"), "rb")  # noqa: WPS515
-    try:
-        yield f.read()
-    finally:
-        f.close()
+    with open(os.path.join(TESTS_DIR, "images", "file_0.jpg"), "rb") as image_file:
+        yield image_file.read()
 
 
 @pytest.fixture
@@ -44,7 +41,7 @@ def app_container(app_config):
 def wired_app_container(app_config):
     container = Container()
     container.config.from_dict(app_config)
-    container.wire([app_routs])
+    container.wire([planets_routes])
     yield container
     container.unwire()
 
@@ -52,7 +49,7 @@ def wired_app_container(app_config):
 @pytest.fixture
 def test_app(wired_app_container):
     app = FastAPI()
-    set_routers(app)
+    app.include_router(app_router, prefix="/planets", tags=["planet"])
     return app
 
 

@@ -16,7 +16,7 @@ def create_app() -> FastAPI:
     container.wire([planets_routes])
 
     app = FastAPI()
-    app.include_router(app_router, prefix="/planets", tags=["planet"])
+    app.include_router(app_router, prefix="/planets", tags=["planets"])
     return app
 
 

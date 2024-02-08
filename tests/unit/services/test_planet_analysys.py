@@ -2,11 +2,11 @@ from copy import deepcopy
 
 import numpy as np
 
-from src.container_task import Container
+from src.containers.containers import Container
 
 
 class FakePlanetClassifier:
-    def process(self):
+    def process(self, image: bytes, content_id: str):
         return "".join(
             [
                 "haze: 0, primary: 0, agriculture: 0, clear: 0, water: 0, ",
