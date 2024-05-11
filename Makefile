@@ -37,8 +37,6 @@ generate_coverage_report:
 .PHONY: lint
 lint:
 	PYTHONPATH=. flake8 .
-	PYTHONPATH=. black .
-	PYTHONPATH=. isort .
 
 .PHONY: build
 build:

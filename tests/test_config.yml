@@ -1,3 +1,28 @@
 content_process:
   dir_path: 'api_test_dir'
   dir_upload: 'uploaded_imgs'
+
+
+model_parameters:
+  names: [
+      "haze",
+      "primary",
+      "agriculture",
+      "clear",
+      "water",
+      "habitation",
+      "road",
+      "cultivation",
+      "slash_burn",
+      "cloudy",
+      "partly_cloudy",
+      "conventional_mine",
+      "bare_ground",
+      "artisinal_mine",
+      "blooming",
+      "selective_logging",
+      "blow_down",
+      ]
+  checkpoint: "models/onnx_planet_model.onnx"
+  img_width: 224
+  img_height: 224

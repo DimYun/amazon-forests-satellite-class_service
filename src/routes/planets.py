@@ -2,21 +2,21 @@ import cv2
 import numpy as np
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, File, UploadFile
-from PIL import Image
 
 from src.containers.containers import Container
 from src.routes.routers import router
-from src.services.planet_classifier import ProcessPlanet, Storage
+from src.services.planet_classifier import ProcessPlanet
 
 
 @router.get("/get_content")
 @inject
 def get_content(
-    content_id: str,
-    storage: Storage = Depends(Provide[Container.store]),
+    config: Container.config = Depends(Provide[Container.config]),
 ):
     return {
-        "content": storage.get(content_id),
+        "code": 200,
+        "prediction_names": {name: '' for name in config['model_parameters']['names']},
+        "error": None,
     }
 
 
@@ -31,20 +31,15 @@ def process_content(
     ),
     content_process: ProcessPlanet = Depends(Provide[Container.content_process]),
 ):
-    try:
-        image_data = content_image.file.read()
-    except Exception:
-        return {"message": "There was an error uploading the file"}
-    finally:
-        content_image.file.close()
+    image_data = content_image.file.read()
+    content_image.file.close()
 
     image = cv2.imdecode(np.frombuffer(image_data, np.uint8), cv2.IMREAD_COLOR)
-    Image.fromarray(image)
-    str_process = content_process.process(
+    dict_process = content_process.process(
         image,
-        str(content_image.filename).split(".")[0],
     )
     return {
-        "message": f"Successfully uploaded {content_image.filename}",
-        "scores": str_process,
+        "code": 200,
+        "predictions": dict_process,
+        "error": None,
     }

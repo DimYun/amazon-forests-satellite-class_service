@@ -69,8 +69,6 @@ starlette==0.26.1
 stevedore==5.1.0
 testfixtures==6.18.5
 tomli==2.0.1
---find-links https://download.pytorch.org/whl/torch_stable.html
-torch==2.0.1+cpu
 typing-extensions==4.9.0
 urllib3==2.1.0
 uvicorn==0.18.2

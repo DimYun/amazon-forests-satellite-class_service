@@ -4,12 +4,12 @@ from fastapi.testclient import TestClient
 
 
 def test_types_list(client: TestClient):
-    response = client.get("/planets/get_content?content_id=test")
+    response = client.get("/planets/get_content")
     assert response.status_code == HTTPStatus.OK
 
-    planet_types = response.json()["content"]
+    planet_types = response.json()["prediction_names"]
 
-    assert isinstance(planet_types, str)
+    assert isinstance(planet_types, dict)
 
 
 def test_predict(client: TestClient, sample_image_bytes: bytes):
@@ -19,6 +19,6 @@ def test_predict(client: TestClient, sample_image_bytes: bytes):
     response = client.post("/planets/process_content", files=files)
     assert response.status_code == HTTPStatus.OK
 
-    predicted_scores = response.json()["scores"]
+    predicted_scores = response.json()["predictions"]
 
-    assert isinstance(predicted_scores, str)
+    assert isinstance(predicted_scores, dict)
