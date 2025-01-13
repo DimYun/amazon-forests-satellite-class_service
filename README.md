@@ -1,45 +1,59 @@
-# Домашняя работа №1. Сервис
+# Type of Amazon forests satellite image. Service
+
+FastAPI service for Amazon forests satellite image 
+[NN multilabel classification](https://github.com/DimYun/amazon-forests-satellite-class_model). 
+I made accent on "industrial quality" code with next technologies:
+
+* FastAPI
+* Gitlab CI/CD (test, deploy, destroy)
+* DVC
+* Docker
+* Unit & Integration tests with coverage report
+* Linters (flake8 + wemake)
+
+**Disclaimers**:
+
+* the project was originally crated and maintained in GitLab local instance, some repo functionality may be unavailable
+* the project was created by me and me only as part of the CVRocket professional development course
+* this project is my first "industry grade" service for NN, for more advanced code and features please see [car-plate projects](https://github.com/DimYun/car-plate_service)
 
 
-Сервис реализован на FastAPI и предназначен для выдачи предсказаний модели [многоклассовой классификации](https://gitlab.deepschool.ru/cvr-dec23/d.iunovidov/hw-01-modeling/-/tree/dev?ref_type=heads).
+Location for manual test:
+* https://amazon_forest_api.lydata.duckdns.org
+* docs https://amazon_forest_api.lydata.duckdns.org/docs#/default/process_content_process_content_post
+* user: john_smith 
+* password: 085636251932027
 
 
-Адрес для тестов: http://91.206.15.25:5039
+## Setup of environment
 
-Документация и тестирование GET и POST запросов: http://91.206.15.25:5039/docs#/default/process_content_process_content_post
+First, create and activate `venv`:
+    ```bash
+    python3 -m venv venv
+    . venv/bin/activate
+    ```
 
+Next, install dependencies:
+    ```bash
+    make install
+    ```
 
-## Настройка окружения
+### Commands
 
-Сначала создать и активировать venv:
+#### Preparation
+* `make install` - install python dependencies
 
-```bash
-python3 -m venv venv
-. venv/bin/activate
-```
+#### Run service
+* `make run_app` - run servie. You can define argument `APP_PORT`
 
-Дальше поставить зависимости:
+#### Build docker
+* `make build` - you can define arguments `DOCKER_TAG`, `DOCKER_IMAGE`
 
-```bash
-make install
-```
+#### Static analyse
+* `make lint` - run linters
 
-### Команды
-
-#### Подготовка
-* `make install` - установка библиотек
-
-#### Запуск сервиса
-* `make run_app` - запустить сервис. Можно с аргументом `APP_PORT`
-
-#### Сборка образа
-* `make build` - собрать образ. Можно с аргументами `DOCKER_TAG`, `DOCKER_IMAGE`
-
-#### Статический анализ
-* `make lint` - запуск линтеров
-
-#### Тестирование
-* `make run_unit_tests` - запуск юнит-тестов
-* `make run_integration_tests` - запуск интеграционных тестов
-* `make run_all_tests` - запуск всех тестов
+#### Tests
+* `make run_unit_tests` - run unit tests
+* `make run_integration_tests` - run integration tests
+* `make run_all_tests` - run all tests
 

@@ -1,16 +1,30 @@
+.PHONY: *
+
 APP_PORT := 5039
 DOCKER_TAG := latest
 DOCKER_IMAGE := planet
 DVC_REMOTE_NAME := models_onnx
-USERNAME := d.iunovidov
+USERNAME := dmitriy
+
+PYENV=/home/$(USERNAME)/.pyenv/versions/3.9.17/bin/python
+VENV=/opt/python_venvs/api_venv
+PYTHON=$(VENV)/bin/python3
+PIP=$(VENV)/bin/pip
+
+.PHONY: venv
+venv:
+	$(PYENV) -m venv $(VENV)
+	@echo 'Path to Python executable $(shell pwd)/$(PYTHON)'
+
+.PHONY: install
+install: venv
+	@echo "=== Installing common dependencies ==="
+	$(PIP) install --upgrade pip
+	$(PIP) install -r requirements.txt
 
 .PHONY: run_app
 run_app:
 	python3 -m uvicorn app:create_app --host='0.0.0.0' --port=$(APP_PORT)
-
-.PHONY: install
-install:
-	pip install -r requirements.txt
 
 .PHONY: download_model
 download_model:
@@ -60,7 +74,6 @@ destroy:
 .PHONY: install_dvc
 install_dvc:
 	pip install dvc[ssh]==3.33.2
-
 
 .PHONY: init_dvc
 init_dvc:
