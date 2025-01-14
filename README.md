@@ -21,8 +21,6 @@ I made accent on "industrial quality" code with next technologies:
 Location for manual test:
 * https://amazon_forest_api.lydata.duckdns.org
 * docs https://amazon_forest_api.lydata.duckdns.org/docs#/default/process_content_process_content_post
-* user: john_smith 
-* password: 085636251932027
 
 
 ## Setup of environment
